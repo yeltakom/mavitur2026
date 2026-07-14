@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<title>Mavi Tur 2026 · Menü Seçimi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@500;700;900&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0E2A33; --sea:#14505C; --salt:#E8EDEA; --paper:#FFFFFF;
+    --brass:#C98A2B; --line:#C3CEC9; --muted:#5C7078;
+    --yes:#1E7A5A; --no:#8A8F8C; --veto:#B3402A;
+    --radius:3px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{-webkit-text-size-adjust:100%}
+  body{background:var(--salt);color:var(--ink);
+    font-family:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    font-size:16px;line-height:1.45;overscroll-behavior-y:contain}
+  .wrap{max-width:640px;margin:0 auto;padding:0 16px}
+
+  header{background:var(--ink);color:var(--salt);padding:18px 0 14px;border-bottom:4px solid var(--brass)}
+  .eyebrow{font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--brass)}
+  h1{font-family:"Big Shoulders Display",sans-serif;font-weight:900;font-size:clamp(34px,10vw,56px);
+    line-height:.92;letter-spacing:-.01em;text-transform:uppercase;margin:4px 0 2px}
+  h1 em{font-style:normal;color:var(--brass)}
+  header .sub{color:#A9BEC2;font-size:13px}
+
+  nav{display:flex;background:var(--ink);position:sticky;top:0;z-index:20}
+  nav button{flex:1;appearance:none;border:0;background:transparent;cursor:pointer;color:#87A2A8;
+    padding:12px 6px;font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.09em;
+    text-transform:uppercase;border-bottom:3px solid transparent}
+  nav button[aria-selected="true"]{color:var(--salt);border-bottom-color:var(--brass);background:#0A222A}
+  section[hidden]{display:none}
+
+  label.fl{display:block;font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.12em;
+    text-transform:uppercase;color:var(--muted);margin:0 0 6px}
+  input[type=text],textarea{width:100%;background:var(--paper);border:1px solid var(--line);
+    border-radius:var(--radius);padding:12px;font:inherit;color:var(--ink)}
+  input[type=text]:focus,textarea:focus{outline:2px solid var(--brass);outline-offset:1px}
+  textarea{min-height:64px;resize:vertical}
+
+  /* ---------- intro ---------- */
+  #intro{padding:26px 0 40px}
+  .rulecard{background:var(--paper);border:1px solid var(--line);border-left:4px solid var(--brass);
+    padding:14px 16px;margin:16px 0;font-size:14px}
+  .rulecard b{font-family:"JetBrains Mono",monospace;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--sea)}
+  .rulecard ul{list-style:none;margin-top:6px}
+  .rulecard li{padding:2px 0}
+  .swipekey{display:flex;gap:8px;margin:14px 0}
+  .swipekey div{flex:1;text-align:center;padding:10px 4px;border-radius:var(--radius);
+    font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.05em;color:#fff}
+  .swipekey .k-yes{background:var(--yes)} .swipekey .k-no{background:var(--no)} .swipekey .k-veto{background:var(--veto)}
+  .swipekey b{display:block;font-size:18px;margin-bottom:2px}
+  button.big{appearance:none;border:0;cursor:pointer;width:100%;background:var(--brass);color:#12222A;
+    padding:15px;border-radius:var(--radius);font-family:"Big Shoulders Display",sans-serif;
+    font-weight:900;font-size:22px;letter-spacing:.05em;text-transform:uppercase;margin-top:6px}
+  button.big:disabled{background:#48606A;color:#8FA3AA;cursor:not-allowed}
+
+  /* ---------- deck ---------- */
+  #deckpane{padding:10px 0 30px}
+  .deckhead{display:flex;align-items:baseline;gap:10px;padding:8px 0 4px}
+  .deckhead .cat{font-family:"Big Shoulders Display",sans-serif;font-weight:700;font-size:22px;text-transform:uppercase}
+  .deckhead .prog{margin-left:auto;font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--muted)}
+  .progbar{height:5px;background:#D3DBD7;border-radius:2px;overflow:hidden;margin-bottom:12px}
+  .progbar i{display:block;height:100%;background:var(--brass);transition:width .15s}
+
+  .stage{position:relative;height:min(58vh,420px);touch-action:none}
+  .card{position:absolute;inset:0;background:var(--paper);border:1px solid var(--line);
+    border-radius:6px;box-shadow:0 10px 24px rgba(14,42,51,.14);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;
+    padding:24px;user-select:none;-webkit-user-select:none;will-change:transform}
+  .card .ceyebrow{font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--brass);margin-bottom:10px}
+  .card .dish{font-family:"Big Shoulders Display",sans-serif;font-weight:900;
+    font-size:clamp(34px,9vw,52px);line-height:.95;text-transform:uppercase;letter-spacing:.01em}
+  .card .idx{position:absolute;top:12px;right:14px;font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--muted)}
+  .card.divider{background:var(--ink);color:var(--salt);border-color:var(--ink)}
+  .card.divider .dish{color:var(--salt)}
+  .card.divider .hintline{color:#A9BEC2;font-size:13px;margin-top:12px;max-width:34ch}
+  .stamp{position:absolute;top:22px;padding:6px 12px;border:3px solid;border-radius:4px;
+    font-family:"Big Shoulders Display",sans-serif;font-weight:900;font-size:26px;letter-spacing:.08em;
+    text-transform:uppercase;opacity:0;transform:rotate(-12deg)}
+  .stamp.yes{left:18px;color:var(--yes);border-color:var(--yes)}
+  .stamp.no{right:18px;color:var(--no);border-color:var(--no);transform:rotate(12deg)}
+  .stamp.veto{left:50%;top:40%;transform:translateX(-50%) rotate(-6deg);color:var(--veto);border-color:var(--veto)}
+
+  .actions{display:flex;gap:10px;justify-content:center;margin-top:16px}
+  .actions button{appearance:none;cursor:pointer;border:0;border-radius:50%;width:64px;height:64px;
+    display:grid;place-items:center;font-size:24px;color:#fff;box-shadow:0 4px 10px rgba(14,42,51,.18)}
+  .actions .b-no{background:var(--no)} .actions .b-yes{background:var(--yes)}
+  .actions .b-veto{background:var(--veto);width:52px;height:52px;font-size:18px;align-self:center}
+  .actions .b-undo{background:var(--paper);color:var(--ink);border:1.5px solid var(--line);width:52px;height:52px;font-size:18px;align-self:center}
+  .actions button:focus-visible{outline:3px solid var(--brass);outline-offset:2px}
+  .underdeck{display:flex;justify-content:space-between;margin-top:12px;font-size:12px}
+  .underdeck button{appearance:none;border:0;background:none;cursor:pointer;color:var(--muted);
+    font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.06em;text-decoration:underline}
+  .keyhint{color:var(--muted);font-family:"JetBrains Mono",monospace;font-size:10px;display:none}
+  @media(min-width:700px){.keyhint{display:block}}
+
+  /* ---------- slip / result ---------- */
+  .slip{background:var(--paper);margin-top:18px;font-family:"JetBrains Mono",monospace;font-size:13px;
+    line-height:1.6;padding:20px 18px;border:1px solid var(--line);position:relative}
+  .slip::before,.slip::after{content:"";position:absolute;left:0;right:0;height:8px;
+    background:radial-gradient(circle at 5px 0, transparent 5px, var(--paper) 5px) repeat-x;background-size:12px 8px}
+  .slip::before{top:-8px;transform:rotate(180deg)} .slip::after{bottom:-8px}
+  .slip h3{font-family:"Big Shoulders Display",sans-serif;font-size:24px;text-transform:uppercase;
+    letter-spacing:.06em;border-bottom:2px dashed var(--line);padding-bottom:8px;margin-bottom:10px}
+  .code{background:#0A222A;color:#8FE3C0;padding:12px;border-radius:var(--radius);
+    font-size:12px;word-break:break-all;line-height:1.5;max-height:150px;overflow:auto}
+  .row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+  button.ghost{appearance:none;cursor:pointer;background:transparent;color:var(--ink);
+    border:1.5px solid var(--ink);padding:10px 14px;border-radius:var(--radius);
+    font-family:"JetBrains Mono",monospace;font-size:12px;letter-spacing:.08em;text-transform:uppercase}
+  button.ghost:hover{background:var(--ink);color:var(--salt)}
+  .hint{font-size:13px;color:var(--muted);margin-top:8px}
+
+  /* ---------- tally ---------- */
+  #tallypane{padding:18px 0 60px}
+  .grp{display:flex;align-items:baseline;gap:10px;margin:24px 0 10px;border-bottom:1px solid var(--line);padding-bottom:6px}
+  .grp h2{font-family:"Big Shoulders Display",sans-serif;font-weight:700;font-size:24px;text-transform:uppercase}
+  .grp span{font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--muted);margin-left:auto}
+  .chip{display:inline-block;background:var(--ink);color:var(--salt);padding:3px 8px;margin:0 4px 4px 0;
+    font-family:"JetBrains Mono",monospace;font-size:11px;border-radius:1px}
+  .vetoitem{background:#F7E9E5;border:1px solid #E2B7AB;border-left:4px solid var(--veto);
+    padding:8px 12px;margin:6px 0;font-size:14px}
+  .vetoitem b{color:var(--veto)}
+  pre.menu{white-space:pre-wrap;word-break:break-word;font:inherit;outline:none}
+  pre.menu:focus{background:#FBF9F4}
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--sea);color:#fff;
+    padding:10px 16px;border-radius:var(--radius);font-family:"JetBrains Mono",monospace;font-size:12px;
+    z-index:40;opacity:0;pointer-events:none;transition:opacity .2s}
+  .toast.on{opacity:1}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+  @media print{ nav,header .sub,.eyebrow,button,.hint,.code,#codes,label.fl,textarea,input,.grp span{display:none!important}
+    body{background:#fff} .slip{border:0} }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="eyebrow">7 gece · 12 kişi · 1 kaptan</div>
+    <h1>Mavi Tur <em>2026</em></h1>
+    <div class="sub">Kartları kaydır, fişini gruba at. Menüyü teknede değil şimdi tartışalım.</div>
+  </div>
+</header>
+
+<nav class="wrap" role="tablist" style="padding:0">
+  <button role="tab" id="t1" aria-selected="true" aria-controls="p1">1 · Seçimini yap</button>
+  <button role="tab" id="t2" aria-selected="false" aria-controls="p2">2 · Menüyü kur</button>
+</nav>
+
+<main class="wrap">
+<!-- ================= PANE 1 ================= -->
+<section id="p1" role="tabpanel">
+
+  <div id="intro">
+    <div style="margin-bottom:16px">
+      <label class="fl" for="who">Adın</label>
+      <input type="text" id="who" placeholder="Adını yaz, sonra başla" autocomplete="name">
+    </div>
+
+    <div class="swipekey">
+      <div class="k-no"><b>←</b>Geç</div>
+      <div class="k-veto"><b>↑</b>ASLA<br>(alerji)</div>
+      <div class="k-yes"><b>→</b>İsterim</div>
+    </div>
+
+    <div class="rulecard">
+      <b>Nasıl işliyor</b>
+      <ul>
+        <li>→ sağa: bunu yerim, oy veriyorum</li>
+        <li>← sola: farketmez / istemem (kimseye engel değil)</li>
+        <li>↑ yukarı: <b style="color:var(--veto)">ASLA</b> — alerji ya da hassasiyet. Bir kişi bile asla derse o yemek tüm menüden düşer, o yüzden sadece gerçekten gerekiyorsa.</li>
+      </ul>
+    </div>
+
+    <div class="rulecard">
+      <b>Menü kuralı (kaptan düzeni)</b>
+      <ul>
+        <li>Öğle: 1 ana + 1 yardımcı + salata/cacık</li>
+        <li>Akşam: 1 ızgara + 3 meze</li>
+        <li>Bir akşam tatlı, bir akşam meyve</li>
+        <li>5 çayı: her gün 1 çeşit</li>
+        <li>Sabah: klasik kahvaltı + yumurta (sabittir, oylanmaz)</li>
+      </ul>
+    </div>
+
+    <p class="hint" id="resumehint" hidden>Yarım kalmış seçimin var — kaldığın yerden devam edeceksin.</p>
+    <button class="big" id="start" disabled>Başla</button>
+  </div>
+
+  <div id="deckpane" hidden>
+    <div class="deckhead"><div class="cat" id="catname"></div><div class="prog" id="prog"></div></div>
+    <div class="progbar"><i id="progfill"></i></div>
+    <div class="stage" id="stage"></div>
+    <div class="actions">
+      <button class="b-undo" id="undo" aria-label="Geri al" title="Geri al">↩</button>
+      <button class="b-no" id="bno" aria-label="Geç">✕</button>
+      <button class="b-yes" id="byes" aria-label="İsterim">♥</button>
+      <button class="b-veto" id="bveto" aria-label="Asla (alerji)">⛔</button>
+    </div>
+    <div class="underdeck">
+      <button id="skipcat">Bu kategorinin kalanını geç →</button>
+      <span class="keyhint">klavye: ← → ↑ · Z geri al</span>
+    </div>
+  </div>
+
+  <div id="done" hidden>
+    <div style="margin:18px 0 0">
+      <label class="fl" for="note">Eklemek istediğin not (alerji detayı, istek)</label>
+      <textarea id="note" placeholder="Fıstık alerjim var — muhammara ve pestoya dikkat."></textarea>
+    </div>
+    <button class="big" id="make" style="margin-top:14px">Gönder</button>
+    <div id="out" hidden>
+      <div class="slip">
+        <h3>Fişin</h3>
+        <p style="margin-bottom:10px" id="sumline"></p>
+        <div class="code" id="codebox"></div>
+        <div class="row">
+          <button class="ghost" id="copy">Kodu kopyala</button>
+          <button class="ghost" id="redo">Baştan yap</button>
+        </div>
+        <p class="hint">Gönderim çalışmazsa yedek: kodu kopyala, WhatsApp grubuna yapıştır.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= PANE 2 ================= -->
+<section id="p2" role="tabpanel" hidden>
+  <div id="tallypane">
+    <p class="hint" style="margin-bottom:12px">"Yanıtları çek" tüm gönderimleri otomatik getirir. WhatsApp'tan gelen yedek kodları da alttaki kutuya yapıştırabilirsin — ikisi birleşir.</p>
+    <div class="row" style="margin:0 0 14px">
+      <button class="ghost" id="fetchcodes">⟳ Yanıtları çek</button>
+      <span class="hint" id="fetchinfo" style="align-self:center"></span>
+    </div>
+    <label class="fl" for="codes">Elle yapıştırılan kodlar (yedek)</label>
+    <textarea id="codes" style="min-height:130px;font-family:'JetBrains Mono',monospace;font-size:12px"
+      placeholder="MT26.eyJuIjoi…&#10;MT26.eyJuIjoi…"></textarea>
+    <div id="tally"></div>
+  </div>
+</section>
+</main>
+
+<div class="toast" id="toast">Kopyalandı</div>
+
+<script>
+/* =============== AYAR ===============
+   Google Apps Script web app URL'i (kurulum: DEPLOY.md).
+   Boş bırakılırsa eski usul çalışır: kod kopyala → WhatsApp. */
+const SUBMIT_URL = "";
+
+/* =============== VERİ =============== */
+const CATS = [
+ {id:'ogle',   name:'Öğle · Ana yemek', pick:'Günde 1 tane çıkacak', items:[
+  "Kuru fasulye","Taze fasulye","Barbunya","Nohut","Musakka","Karnıyarık","Biber dolması",
+  "Yoğurtlama","Orman kebabı","Tavuk sote","Et sote","Bamya","Börülce","Çökertme kebabı",
+  "Sulu köfte","Köfte","Hamburger","Bezelyeli tavuk","Tavuk haşlama","Mantı"]},
+ {id:'yani',   name:'Öğle · Yardımcı (pilav & makarna)', pick:'Günde 1 tane', items:[
+  "Domatesli pirinç pilavı","Şehriyeli pirinç pilavı","Tavuklu pilav","Nohutlu pilav","Garnitürlü pilav",
+  "İncirli bademli pilav","Bulgur pilavı","Meyhane pilavı","Sebzeli bulgur","Mercimekli bulgur","Sarımsaklı bulgur",
+  "Bolonez soslu makarna","Pesto soslu makarna","Arrabbiata makarna","Peynirli makarna","Erişte","Salçalı makarna"]},
+ {id:'salata', name:'Salatalar', pick:'Öğlenlere eşlik edecek (cacık zaten var)', items:[
+  "Mevsim salata","Sezar salata","Kırmızı salata","Çoban salata","Kaşık salata","Yeşil salata"]},
+ {id:'aksam',  name:'Akşam · Izgara', pick:'Her akşam 1 tane', items:[
+  "Tavuk ızgara","Köfte ızgara","Pirzola","Biftek / Antrikot","Balık ızgara"]},
+ {id:'meze',   name:'Mezeler', pick:'Her akşam 3 meze — en çok oy alanlar haftaya dağıtılır', items:[
+  "Köpeoğlu","Muhammara","Mütebbel","Haydari","Kuru cacık","Mamzana","Şakşuka","Arnavut ciğeri","Acılı ezme",
+  "Rus salatası","Amerikan salatası","Patlıcan közleme","Biber közleme","Patlıcan salatası","Yoğurtlu patlıcan",
+  "Kabak tarama","Havuç tarama","Enginar","Kereviz zeytinyağlı","Kereviz salatası","Pembe sultan","Pancar salatası",
+  "Kırmızı lahana turşusu","Brokoli","Avokado meze","Piyaz","Deniz börülcesi","Semizotu sirkeli","Semizotu yoğurtlu",
+  "Fava","Patates salatası","Patates püre","Biber yoğurtlama","Kabak borani","Semizotu borani","Humus",
+  "Taze börülce salatası","Kuru börülce salatası","Kavurma fasulye","Atom","Mantar dolması","Tereyağlı patates",
+  "Mantar sote","Kalamar","Karides","Ahtapot","Babagannuş","Patates topları","Pestolu marine peynir"]},
+ {id:'cay',    name:'5 Çayı', pick:'Her gün 1 çeşit', items:[
+  "Kek çeşitleri","Börek çeşitleri","Açma","Poğaça","Kısır","Mercimek köftesi","Kurabiye","Un helvası",
+  "Hamur kızartma","Cheesecake","Browni","Prenses tatlısı","Mozaik pasta"]},
+ {id:'tatli',  name:'Tatlılar', pick:'Tatlı akşamları için', items:[
+  "Revani","Kemalpaşa","Kadayıf","Fırında helva","İrmik helvası","Muhallebi","Puding","Frozen"]},
+ {id:'meyve',  name:'Meyveler', pick:'Meyve akşamları + gün içi', items:[
+  "Karpuz","Kavun","Armut","Elma","İncir","Şeftali","Kayısı","Kiraz","Portakal","Kivi","Ananas","Mango",
+  "Avokado","Muz","Erik","Çilek","Üzüm"]}
+];
+/* global düz liste */
+const FLAT=[]; CATS.forEach((c,ci)=>c.items.forEach(n=>FLAT.push({n, ci})));
+const TOTAL = FLAT.length;
+const DAYS = ["Cumartesi","Pazar","Pazartesi","Salı","Çarşamba","Perşembe","Cuma"];
+
+/* =============== DURUM =============== */
+const likes = new Set(), vetos = new Set();
+let pos = 0;               // FLAT index of current card
+let shownDivider = -1;     // last category divider shown
+const undoStack = [];
+const $ = s => document.querySelector(s);
+
+/* güvenli localStorage (Pages'te çalışır, önizlemede sessizce atlanır) */
+const store = {
+  get(){ try{ return JSON.parse(localStorage.getItem('mavitur2026')||'null'); }catch(e){ return null } },
+  set(){ try{ localStorage.setItem('mavitur2026', JSON.stringify({
+      w:$('#who').value, p:pos, l:[...likes], v:[...vetos], d:shownDivider })); }catch(e){} },
+  clear(){ try{ localStorage.removeItem('mavitur2026'); }catch(e){} }
+};
+
+/* =============== GİRİŞ =============== */
+$('#start').textContent = `Başla — ${TOTAL} kart`;
+const saved = store.get();
+if(saved && saved.p>0 && saved.p<TOTAL){ $('#resumehint').hidden=false; }
+$('#who').addEventListener('input', e=>{ $('#start').disabled = !e.target.value.trim(); });
+if(saved && saved.w){ $('#who').value=saved.w; $('#start').disabled=false; }
+
+$('#start').onclick = ()=>{
+  if(saved && saved.p>0 && saved.p<TOTAL && (saved.w||'')===$('#who').value){
+    pos=saved.p; shownDivider=saved.d??-1;
+    (saved.l||[]).forEach(i=>likes.add(i)); (saved.v||[]).forEach(i=>vetos.add(i));
+  }
+  $('#intro').hidden=true; $('#deckpane').hidden=false;
+  renderStage();
+};
+
+/* =============== DESTE =============== */
+let dragging=null;
+
+function currentCat(){ return pos<TOTAL ? CATS[FLAT[pos].ci] : null; }
+
+function renderStage(){
+  const stage=$('#stage'); stage.innerHTML='';
+  if(pos>=TOTAL){ finishDeck(); return; }
+  const item=FLAT[pos], cat=CATS[item.ci];
+
+  /* kategori başında ayraç kartı */
+  if(item.ci!==shownDivider && FLAT.findIndex(f=>f.ci===item.ci)===pos){
+    const d=document.createElement('div');
+    d.className='card divider';
+    d.innerHTML=`<div class="ceyebrow">Sıradaki kategori</div>
+      <div class="dish">${cat.name}</div>
+      <div class="hintline">${cat.pick} · ${cat.items.length} kart. Devam etmek için dokun.</div>`;
+    d.onclick=()=>{ shownDivider=item.ci; store.set(); renderStage(); };
+    stage.appendChild(d); updateHead(); return;
+  }
+
+  /* arkadaki kart (önizleme) */
+  if(pos+1<TOTAL && FLAT[pos+1].ci===item.ci){
+    const back=document.createElement('div');
+    back.className='card'; back.style.transform='scale(.96) translateY(8px)'; back.style.opacity='.6';
+    back.innerHTML=`<div class="dish" style="opacity:.25">${FLAT[pos+1].n}</div>`;
+    stage.appendChild(back);
+  }
+
+  const c=document.createElement('div');
+  c.className='card';
+  c.innerHTML=`<span class="idx">${pos+1}/${TOTAL}</span>
+    <div class="ceyebrow">${cat.name}</div>
+    <div class="dish">${item.n}</div>
+    <div class="stamp yes">İsterim</div>
+    <div class="stamp no">Geç</div>
+    <div class="stamp veto">ASLA</div>`;
+  attachDrag(c);
+  stage.appendChild(c);
+  updateHead();
+}
+
+function updateHead(){
+  const cat=currentCat();
+  $('#catname').textContent = cat?cat.name:'Bitti';
+  $('#prog').textContent = `${Math.min(pos,TOTAL)}/${TOTAL} · ${likes.size} isterim · ${vetos.size} asla`;
+  $('#progfill').style.width = (pos/TOTAL*100)+'%';
+}
+
+function attachDrag(card){
+  let sx=0, sy=0, dx=0, dy=0, active=false;
+  const yes=card.querySelector('.stamp.yes'), no=card.querySelector('.stamp.no'), vt=card.querySelector('.stamp.veto');
+  card.addEventListener('pointerdown', e=>{
+    active=true; sx=e.clientX; sy=e.clientY; card.setPointerCapture(e.pointerId);
+    card.style.transition='none';
+  });
+  card.addEventListener('pointermove', e=>{
+    if(!active) return;
+    dx=e.clientX-sx; dy=e.clientY-sy;
+    card.style.transform=`translate(${dx}px,${dy}px) rotate(${dx/18}deg)`;
+    yes.style.opacity = Math.max(0, Math.min(1, dx/90));
+    no.style.opacity  = Math.max(0, Math.min(1,-dx/90));
+    vt.style.opacity  = Math.max(0, Math.min(1,(-dy-60)/70)) * (Math.abs(dx)<60?1:0);
+  });
+  const end = ()=>{
+    if(!active) return; active=false;
+    const vetoHit = dy<-110 && Math.abs(dx)<70;
+    if(vetoHit){ fly(card,0,-600,'veto'); return; }
+    if(dx>90){ fly(card,600,dy,'yes'); return; }
+    if(dx<-90){ fly(card,-600,dy,'no'); return; }
+    card.style.transition='transform .18s ease'; card.style.transform='';
+    yes.style.opacity=no.style.opacity=vt.style.opacity=0; dx=dy=0;
+  };
+  card.addEventListener('pointerup', end);
+  card.addEventListener('pointercancel', end);
+}
+
+function fly(card,tx,ty,verdict){
+  card.style.transition='transform .22s ease, opacity .22s ease';
+  card.style.transform=`translate(${tx}px,${ty}px) rotate(${tx/14}deg)`;
+  card.style.opacity='0';
+  setTimeout(()=>decide(verdict), 160);
+}
+
+function decide(verdict){
+  if(pos>=TOTAL) return;
+  undoStack.push({p:pos, l:likes.has(pos), v:vetos.has(pos)});
+  likes.delete(pos); vetos.delete(pos);
+  if(verdict==='yes') likes.add(pos);
+  if(verdict==='veto') vetos.add(pos);
+  pos++; store.set(); renderStage();
+}
+
+$('#byes').onclick = ()=>decide('yes');
+$('#bno').onclick  = ()=>decide('no');
+$('#bveto').onclick= ()=>{ if(confirm('ASLA = alerji/hassasiyet. Bu yemek herkes için menüden çıkar. Emin misin?')) decide('veto'); };
+$('#undo').onclick = ()=>{
+  const u=undoStack.pop(); if(!u) return;
+  pos=u.p; likes.delete(pos); vetos.delete(pos);
+  if(u.l) likes.add(pos); if(u.v) vetos.add(pos);
+  $('#done').hidden=true; $('#deckpane').hidden=false;
+  store.set(); renderStage();
+};
+$('#skipcat').onclick = ()=>{
+  const ci=FLAT[pos]?.ci; if(ci===undefined) return;
+  while(pos<TOTAL && FLAT[pos].ci===ci){ undoStack.push({p:pos,l:likes.has(pos),v:vetos.has(pos)}); likes.delete(pos); vetos.delete(pos); pos++; }
+  store.set(); renderStage();
+};
+document.addEventListener('keydown', e=>{
+  if($('#deckpane').hidden) return;
+  if(e.key==='ArrowRight') decide('yes');
+  if(e.key==='ArrowLeft') decide('no');
+  if(e.key==='ArrowUp'){ e.preventDefault(); $('#bveto').click(); }
+  if(e.key.toLowerCase()==='z') $('#undo').click();
+});
+
+function finishDeck(){
+  $('#deckpane').hidden=true; $('#done').hidden=false; updateHead();
+  window.scrollTo(0,0);
+}
+
+/* =============== KOD ÜRETİMİ =============== */
+const maskHex = set => { let h=''; for(let i=0;i<TOTAL;i+=4){ let v=0;
+  for(let b=0;b<4;b++) if(set.has(i+b)) v|=(1<<b); h+=v.toString(16);} return h; };
+const hexMask = h => { const s=new Set(); for(let i=0;i<h.length;i++){ const v=parseInt(h[i],16)||0;
+  for(let b=0;b<4;b++) if(v&(1<<b)) s.add(i*4+b);} return s; };
+const b64e = o => btoa(unescape(encodeURIComponent(JSON.stringify(o)))).replace(/=+$/,'');
+const b64d = s => JSON.parse(decodeURIComponent(escape(atob(s))));
+
+$('#make').onclick = async ()=>{
+  const payload={ n:($('#who').value||'İsimsiz').trim().slice(0,24),
+    c:TOTAL, l:maskHex(likes), v:maskHex(vetos), x:$('#note').value.trim().slice(0,200) };
+  const code='MT26.'+b64e(payload);
+  $('#codebox').textContent=code;
+  $('#out').hidden=false;
+  $('#copy').dataset.v=code;
+  $('#out').scrollIntoView({behavior:'smooth',block:'center'});
+
+  if(SUBMIT_URL){
+    $('#sumline').textContent='Gönderiliyor…';
+    try{
+      await fetch(SUBMIT_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:code});
+      $('#sumline').innerHTML=`✓ <b>${payload.n}</b>, seçimin organizatöre ulaştı (${likes.size} isterim · ${vetos.size} asla). Başka bir şey yapmana gerek yok. Yedek kodun aşağıda.`;
+      $('#make').textContent='Gönderildi ✓'; $('#make').disabled=true;
+    }catch(e){
+      $('#sumline').textContent='Gönderim olmadı (internet?). Sorun değil — aşağıdaki kodu kopyalayıp gruba at:';
+    }
+  }else{
+    $('#sumline').textContent=`${payload.n} · ${likes.size} isterim · ${vetos.size} asla. Kodu gruba yapıştır:`;
+  }
+};
+function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),1600);}
+async function copy(v){ try{await navigator.clipboard.writeText(v);toast('Kopyalandı');}
+  catch{const ta=document.createElement('textarea');ta.value=v;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();toast('Kopyalandı');} }
+$('#copy').onclick = e=>copy(e.target.dataset.v);
+$('#redo').onclick = ()=>{ if(!confirm('Tüm seçimlerin silinecek. Baştan?')) return;
+  store.clear(); likes.clear(); vetos.clear(); pos=0; shownDivider=-1; undoStack.length=0;
+  $('#done').hidden=true; $('#out').hidden=true; $('#intro').hidden=false; };
+
+/* =============== SEKMELER =============== */
+[['t1','p1'],['t2','p2']].forEach(([t,p],i)=>{
+  $('#'+t).onclick=()=>{
+    $('#t1').setAttribute('aria-selected',i===0); $('#t2').setAttribute('aria-selected',i===1);
+    $('#p1').hidden=i!==0; $('#p2').hidden=i!==1; window.scrollTo(0,0);
+  };
+});
+
+/* =============== SAYIM + MENÜ KURUCU =============== */
+let fetched = [];
+function parseCodes(raw){
+  const people=[];
+  const toks = [...fetched, ...raw.split(/\s+/)].filter(Boolean);
+  toks.forEach(tok=>{
+    const c=String(tok).trim().replace(/^.*#/,'');
+    if(!c.startsWith('MT26.')) return;
+    try{
+      const p=b64d(c.slice(5));
+      if(p.c!==TOTAL) return; /* eski/yeni liste uyumsuz */
+      p.L=hexMask(p.l||''); p.V=hexMask(p.v||'');
+      const k=p.n.toLocaleLowerCase('tr');
+      const i=people.findIndex(q=>q.n.toLocaleLowerCase('tr')===k);
+      if(i>=0) people[i]=p; else people.push(p); /* aynı isim tekrar gönderdiyse sonuncusu geçerli */
+    }catch(e){}
+  });
+  return people;
+}
+
+$('#fetchcodes').onclick = async ()=>{
+  if(!SUBMIT_URL){ $('#fetchinfo').textContent='Toplama adresi henüz kurulmadı (DEPLOY.md).'; return; }
+  $('#fetchinfo').textContent='Çekiliyor…';
+  try{
+    const r=await fetch(SUBMIT_URL);
+    const j=await r.json();
+    fetched = j.codes||[];
+    $('#fetchinfo').textContent=`${fetched.length} gönderim geldi · ${new Date().toLocaleTimeString('tr')}`;
+    renderTally();
+  }catch(e){ $('#fetchinfo').textContent='Çekilemedi — bağlantıyı kontrol et.'; }
+};
+
+function ranked(ci, votes, vetoSet){
+  const start=FLAT.findIndex(f=>f.ci===ci);
+  const cat=CATS[ci];
+  return cat.items.map((n,k)=>({n, gi:start+k, v:votes[start+k]}))
+    .filter(r=>!vetoSet.has(r.gi))
+    .sort((a,b)=> b.v-a.v || a.gi-b.gi);
+}
+const catIdx = id => CATS.findIndex(c=>c.id===id);
+
+function buildMenu(people){
+  const N=people.length;
+  const votes=new Array(TOTAL).fill(0);
+  const vetoSet=new Set(); const vetoWho={};
+  people.forEach(p=>{
+    p.L.forEach(i=>votes[i]++);
+    p.V.forEach(i=>{ vetoSet.add(i); (vetoWho[i]=vetoWho[i]||[]).push(p.n); });
+  });
+
+  const rOgle = ranked(catIdx('ogle'),votes,vetoSet);
+  const rYani = ranked(catIdx('yani'),votes,vetoSet);
+  const rSal  = ranked(catIdx('salata'),votes,vetoSet);
+  const rAks  = ranked(catIdx('aksam'),votes,vetoSet);
+  const rMez  = ranked(catIdx('meze'),votes,vetoSet);
+  const rCay  = ranked(catIdx('cay'),votes,vetoSet);
+  const rTat  = ranked(catIdx('tatli'),votes,vetoSet);
+  const rMey  = ranked(catIdx('meyve'),votes,vetoSet);
+
+  const pick=(arr,i)=> arr.length? arr[i%arr.length] : {n:'—',v:0};
+  /* akşam ızgara: 5 çeşit 7 geceye, üst üste tekrar olmadan */
+  const gridOrder=[0,1,2,0,3,1,4];
+  const dinnerMains = gridOrder.map(i=>pick(rAks,i));
+  /* meze: ilk 21'i yılan dağıtımı — her gece 1 üst, 1 orta, 1 alt sıradan */
+  const top21=rMez.slice(0,21);
+  const mezeNights=DAYS.map((_,d)=>[top21[d],top21[d+7],top21[d+14]].filter(Boolean));
+  /* tatlı-meyve dönüşümü: 1,3,5,7. geceler tatlı */
+  const desserts=DAYS.map((_,d)=> d%2===0 ? {t:'Tatlı', it:pick(rTat, d/2)} : {t:'Meyve', it:null});
+  const fruitPlate=rMey.slice(0,6).map(r=>r.n).join(', ')||'—';
+
+  const lines=[];
+  lines.push(`MAVİ TUR 2026 — KAPTAN MENÜSÜ`);
+  lines.push(`${N} kişi oyladı · 7 gece`);
+  lines.push('─'.repeat(36));
+  lines.push(`SABAH (her gün): Klasik kahvaltı + yumurta çeşitleri`);
+  lines.push('');
+  DAYS.forEach((day,d)=>{
+    const om=pick(rOgle,d), oy=pick(rYani,d), sal= d%2===0 ? pick(rSal,Math.floor(d/2)).n : 'Cacık / yoğurt';
+    const cay=pick(rCay,d);
+    lines.push(`■ ${day.toUpperCase()}`);
+    lines.push(`  Öğle   : ${om.n} (${om.v}) + ${oy.n} (${oy.v}) + ${sal}`);
+    lines.push(`  İkindi : ${cay.n} (${cay.v})`);
+    lines.push(`  Akşam  : ${dinnerMains[d].n} (${dinnerMains[d].v})`);
+    mezeNights[d].forEach(m=>lines.push(`           · ${m.n} (${m.v})`));
+    if(desserts[d].t==='Tatlı') lines.push(`  Tatlı  : ${desserts[d].it.n} (${desserts[d].it.v})`);
+    else lines.push(`  Meyve  : mevsim tabağı (${fruitPlate})`);
+    lines.push('');
+  });
+  const vetoLines=[...vetoSet].map(gi=>`• ${FLAT[gi].n} — ${(vetoWho[gi]||[]).join(', ')}`);
+  lines.push(`ASLA LİSTESİ (menüden tamamen çıkarıldı)`);
+  lines.push(vetoLines.length?vetoLines.join('\n'):'— yok');
+  lines.push('');
+  const notes=people.filter(p=>p.x).map(p=>`• ${p.n}: ${p.x}`);
+  lines.push(`NOTLAR / ALERJİ DETAYI`);
+  lines.push(notes.length?notes.join('\n'):'— yok');
+  lines.push('');
+  lines.push(`KATILAN: ${people.map(p=>p.n).join(', ')}`);
+  return {text:lines.join('\n'), vetoSet, vetoWho};
+}
+
+function renderTally(){
+  const people=parseCodes($('#codes').value);
+  const box=$('#tally');
+  if(!people.length){ box.innerHTML='<p class="hint" style="margin-top:12px">Kod bekleniyor — bir tane bile yapıştırsan menü kurulmaya başlar.</p>'; return; }
+  const {text, vetoSet, vetoWho}=buildMenu(people);
+  box.innerHTML=`
+    <div class="grp"><h2>Katılım</h2><span>${people.length}/12</span></div>
+    <div>${people.map(p=>`<span class="chip">${p.n}</span>`).join('')}</div>
+
+    <div class="grp"><h2>Asla listesi</h2><span>${vetoSet.size} yemek düştü</span></div>
+    ${[...vetoSet].map(gi=>`<div class="vetoitem"><b>⛔ ${FLAT[gi].n}</b> — ${(vetoWho[gi]||[]).join(', ')}</div>`).join('') || '<p class="hint">Kimse asla demedi.</p>'}
+
+    <div class="slip">
+      <h3>Kaptanın fişi</h3>
+      <p class="hint" style="margin:-4px 0 10px">Metnin üstüne tıklayıp elle düzenleyebilirsin, sonra kopyala/yazdır.</p>
+      <pre class="menu" id="menutext" contenteditable="true" spellcheck="false"></pre>
+      <div class="row">
+        <button class="ghost" id="copymenu">Menüyü kopyala</button>
+        <button class="ghost" onclick="window.print()">Yazdır / PDF</button>
+      </div>
+    </div>`;
+  $('#menutext').textContent=text;
+  $('#copymenu').onclick=()=>copy($('#menutext').textContent);
+}
+$('#codes').addEventListener('input', renderTally);
+renderTally();
+</script>
+</body>
+</html>
