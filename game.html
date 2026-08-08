@@ -18,11 +18,10 @@ body{
 }
 .wrap{width:100%; max-width:520px; padding:20px 18px 40px; flex:1; display:flex; flex-direction:column}
 h1{font-size:26px; margin:8px 0 2px; letter-spacing:.5px}
-.sub{color:var(--mut); font-size:14px; margin-bottom:22px}
-.gold{color:var(--gold)}
+.sub{color:var(--mut); font-size:14px; margin-bottom:18px}
 button{
   font:inherit; border:0; cursor:pointer; border-radius:14px; width:100%;
-  padding:16px 18px; margin-top:12px; font-size:17px; font-weight:600;
+  padding:15px 18px; margin-top:12px; font-size:17px; font-weight:600;
 }
 .big{background:var(--gold); color:#20293a}
 .ghost{background:#ffffff14; color:var(--fg); border:1px solid #ffffff2a}
@@ -36,19 +35,36 @@ button{
 .hint{color:var(--mut); font-size:14px; margin-top:10px; line-height:1.4}
 .ans{display:none; margin-top:18px; padding-top:16px; border-top:1px dashed #ffffff33}
 .ans.show{display:block; animation:pop .25s ease}
-.ans .who{font-size:24px; font-weight:800; color:var(--ok)}
+.ans .who{font-size:23px; font-weight:800; color:var(--ok)}
 .ans .why{color:var(--mut); font-size:15px; margin-top:6px; line-height:1.5}
 @keyframes pop{from{transform:scale(.96); opacity:0} to{transform:scale(1); opacity:1}}
 .prog{color:var(--mut); font-size:13px; text-align:center; margin-top:10px}
-.award .who{font-size:22px; font-weight:800}
-.award .title{font-size:17px; color:var(--gold); font-weight:700; margin:2px 0 12px}
-.award .why{color:var(--fg); opacity:.92; font-size:15.5px; line-height:1.55}
 .emoji{font-size:44px; line-height:1; margin-bottom:8px}
 .row{display:flex; gap:10px}
 .row button{flex:1}
 .foot{color:#6c8399; font-size:12px; text-align:center; margin-top:26px; line-height:1.5}
-a{color:var(--accent)}
 .hidden{display:none}
+/* crew grid */
+.grid{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:14px}
+.grid button{margin:0; padding:14px 10px; font-size:16px}
+.grid .ge{font-size:22px; margin-right:6px}
+/* character card */
+.cn{font-size:24px; font-weight:800}
+.ct{font-size:16px; color:var(--gold); font-weight:700; margin:2px 0 4px}
+.badge{display:inline-block; background:#ffffff14; border:1px solid #ffffff26; border-radius:999px;
+  padding:4px 12px; font-size:13px; color:var(--mut); margin:8px 0 4px}
+.bars{margin-top:12px}
+.bar{margin-top:9px}
+.bar .bl{display:flex; justify-content:space-between; font-size:13px; color:var(--mut); margin-bottom:4px}
+.bar .bt{height:9px; background:#ffffff14; border-radius:99px; overflow:hidden}
+.bar .bf{height:100%; background:linear-gradient(90deg,var(--accent),var(--gold)); border-radius:99px}
+.duo{display:flex; gap:10px; margin-top:14px}
+.duo div{flex:1; background:#ffffff0e; border:1px solid #ffffff1f; border-radius:12px; padding:10px 12px}
+.duo .dl{font-size:11px; letter-spacing:1px; text-transform:uppercase; color:var(--mut)}
+.duo .dv{font-size:15px; font-weight:700; margin-top:3px}
+.facts{margin:14px 0 0; padding:0 0 0 18px; color:var(--fg)}
+.facts li{margin-top:7px; font-size:14.5px; line-height:1.45; opacity:.92}
+.read{margin-top:14px; font-style:italic; color:var(--gold); font-size:15px; line-height:1.5}
 </style>
 </head>
 <body>
@@ -57,61 +73,55 @@ a{color:var(--accent)}
   <!-- ============ MENU ============ -->
   <div id="menu">
     <h1>⚓ The Galley Game</h1>
-    <div class="sub">Mavi Tur 2026 · based on 100% real ballot data from 10 sailors</div>
+    <div class="sub">Mavi Tur 2026 · 100% real ballot data · 10 sailors · 153 dishes</div>
     <div class="card">
       <div class="tag">How to play</div>
-      <div class="hint">One phone, passed around or held by the quizmaster. Read the question out loud,
-      let everyone shout their guess, then tap <b>Reveal</b>. No points, only glory and public shame.</div>
+      <div class="hint">One phone, one quizmaster. Read out loud, everyone shouts a guess, tap <b>Reveal</b>.
+      Every round deals <b>12 fresh questions</b> from a pool of 46 — play again for new ones.
+      No points, only glory and public shame.</div>
     </div>
-    <button class="big" onclick="start('quiz')">🎤 Start the Quiz (20 questions)</button>
-    <button class="ghost" onclick="start('awards')">🏆 Awards Ceremony (10 titles)</button>
-    <div class="foot">Data source: the official Mavi Tur 2026 menu election.<br>
-    All facts below are real votes. We just counted.</div>
+    <button class="big" onclick="startQuiz()">🎤 New Quiz Round (12 random questions)</button>
+    <button class="ghost" onclick="startFiles()">🕵️ Crew Files — character analysis</button>
+    <button class="ghost" onclick="startAwards()">🏆 Awards Ceremony</button>
+    <div class="foot">Every number below is a real counted vote. We just did the math.</div>
   </div>
 
   <!-- ============ GAME ============ -->
   <div id="game" class="hidden">
     <div id="stage"></div>
-    <div id="controls">
-      <button class="big" id="revealBtn" onclick="reveal()">👀 Reveal</button>
-      <div class="row">
-        <button class="ghost" onclick="prevCard()">← Back</button>
-        <button class="ghost" onclick="nextCard()">Next →</button>
-      </div>
-      <button class="ghost" onclick="goMenu()">🏠 Menu</button>
-    </div>
+    <div id="controls"></div>
     <div class="prog" id="prog"></div>
   </div>
 
 </div>
 
 <script>
-/* All numbers below come from the real vote dump (10 voters, 153 dishes). */
+/* ================= DATA (all facts computed from the real vote dump) ================= */
 
 const QUIZ = [
  {t:"Warm-up", q:"153 dishes were on the ballot. How many received ZERO yes-votes?",
   a:"None. Zero.", w:"Every single dish found at least one fan. This crew is not here to play."},
- {t:"The Veto", q:"In the entire election, exactly ONE “never, absolutely not” vote was cast. Who pressed the red button — and on which dish?",
+ {t:"The Veto", q:"Exactly ONE “never, absolutely not” vote was cast in the whole election. Who pressed the red button — and on which dish?",
   a:"Yelta — against Kuru fasulye", w:"One veto in 1,530 possible votes, and it went to Turkey's national dish. Bold."},
- {t:"Lonely Hearts", q:"Sarımsaklı bulgur (garlic bulgur) got exactly ONE yes in the whole election. Who is its only friend?",
+ {t:"Lonely Hearts", q:"Sarımsaklı bulgur (garlic bulgur) got exactly ONE yes. Who is its only friend?",
   a:"Mert", w:"1 fan out of 10. Garlic bulgur will remember this loyalty."},
  {t:"The Holdout", q:"Everyone said yes to Mantı… except one person. Who?",
   a:"dd", w:"9/10 for mantı. dd also skipped köfte ızgara AND çoban salata. A pattern emerges."},
  {t:"Big Appetite", q:"Who voted YES to the most dishes — 120 out of 153?",
-  a:"Mert", w:"That's a 78% approval rate. Runner-up: Ferahnaz with 105."},
- {t:"Tough Critic", q:"And who approved the FEWEST — just 67 dishes?",
+  a:"Mert", w:"A 78% approval rate. Runner-up: Ferahnaz with 105."},
+ {t:"Tough Critic", q:"Who approved the FEWEST dishes — just 67?",
   a:"uli", w:"Strict but fair. Every uli-approved dish should feel genuinely proud of itself."},
- {t:"Taste Twins", q:"Which two sailors agree on 71% of their food choices — the most similar palates on board?",
+ {t:"Taste Twins", q:"Which two sailors agree on 71% of their choices — the most similar palates on board?",
   a:"Ferahnaz & selim", w:"Statistically, they should just share one plate."},
- {t:"Taste Strangers", q:"And which two agree the LEAST — only 34%?",
-  a:"Yiğit & dd", w:"One is a carnivore, the other's meat score is literally zero. Seat them apart at dinner."},
+ {t:"Taste Strangers", q:"Which two agree the LEAST — only 34%?",
+  a:"Yiğit & dd", w:"One scored 9/9 on meat, the other 0/9. Seat them apart at dinner."},
  {t:"Grill Night", q:"dd approved exactly ONE of the five grill options. Which one?",
   a:"Balık ızgara", w:"The sea provides, the land does not. dd's meat index: 0 out of 9."},
  {t:"Fruit Police", q:"One of us approved only 7 of the 17 fruits — no peach, no cherry, no melon, no apricot. Who?",
-  a:"Yiğit", w:"Also 3/13 on the veggie index. His entire note on the ballot: “Done.”"},
+  a:"Yiğit", w:"Also 3/13 on the veggie index. His entire ballot note: “Done.”"},
  {t:"Consistency Award", q:"Who approved every single fruit EXCEPT kiwi — the exact fruit they're allergic to?",
   a:"Janset", w:"16/17 fruits, and the missing one is the allergy. Flawless data discipline."},
- {t:"Meat Duel", q:"Two sailors scored a perfect 9/9 on the meat index (köfte, pirzola, biftek, sote…). Name them.",
+ {t:"Meat Duel", q:"Two sailors scored a perfect 9/9 on the meat index. Name them.",
   a:"Yiğit & Mert", w:"If a lamb goes missing on this boat, we have our suspects."},
  {t:"Sugar-Free Zone", q:"Who skipped cakes AND cookies at tea time (only 4 tea-time yes-votes) but approved all 17 fruits?",
   a:"Yelta", w:"The body is a temple. The temple accepts watermelon."},
@@ -126,66 +136,235 @@ const QUIZ = [
  {t:"Safety First", q:"Who reported a cashew allergy… for a menu that contains exactly zero cashews?",
   a:"Mert", w:"His words: “I don't see it on the menu but just in case 🤣🤣”. Proactive risk management."},
  {t:"Sea Squad", q:"Six sailors approved ALL FIVE seafood items (kalamar, karides, ahtapot, balık ızgara, deniz börülcesi). Name ONE of the four who didn't.",
-  a:"Janset, dd, Lale or uli", w:"The Sea Squad: Yiğit, Yelta, Ferahnaz, Mert, selim, Erol. The others have… reservations about tentacles."},
- {t:"Grand Finale", q:"Twelve dishes got a PERFECT 10/10 from the whole crew. Name as many as you can — 1 point each, quizmaster judges.",
+  a:"Janset, dd, Lale or uli", w:"Sea Squad members: Yiğit, Yelta, Ferahnaz, Mert, selim, Erol."},
+ {t:"Grand Finale", q:"Twelve dishes got a PERFECT 10/10 from the whole crew. Name as many as you can — quizmaster judges.",
   a:"The Perfect Twelve", w:"Taze fasulye · Börülce · Domatesli pilav · Mevsim salata · Yeşil salata · Balık ızgara · Piyaz · Deniz börülcesi · Kalamar · Karides · Karpuz · Üzüm."},
+ {t:"The Outlier", q:"For SEVEN of the ten sailors, the least-similar palate on board is the same person. Who is this delicious outlier?",
+  a:"Yiğit", w:"Seven separate people, one shared taste stranger. A true original."},
+ {t:"Perfectionist", q:"Mert gave a 100% yes-rate to how many of the 8 menu categories?",
+  a:"SIX of eight", w:"All pilavs, all salads, all grills, all tea-time, all desserts, all fruits. Only mains (17/20) and mezes (37/49) survived."},
+ {t:"Plot Twist", q:"Only three sailors approved ALL SIX salads. Mert, Yelta and… the boat's number-one carnivore. Who?",
+  a:"Yiğit", w:"Meat 9/9, veggies 3/13, but salads 6/6. Even predators need a garnish."},
+ {t:"Cheesecake Club", q:"Cheesecake found only 3 fans. Mert and Yiğit are two — who completes the trio?",
+  a:"Ferahnaz", w:"The other seven remain loyal to the Turkish dessert canon."},
+ {t:"Duo Hunt", q:"Prenses tatlısı got exactly 2 votes. Which duo?",
+  a:"Mert & Yiğit", w:"The princess found only two knights."},
+ {t:"Duo Hunt II", q:"Rus salatası also got exactly 2 votes. Which duo?",
+  a:"Mert & Yelta", w:"Cold-war era salad, two brave diplomats."},
+ {t:"Duo Hunt III", q:"Mamzana — 2 votes only. Which duo?",
+  a:"Ferahnaz & Janset", w:"The meze connoisseurs recognized each other."},
+ {t:"Tentacle Check", q:"Four sailors did NOT vote for ahtapot (octopus). Name one.",
+  a:"Janset, Lale, dd or uli", w:"Six friends of the octopus: Erol, Ferahnaz, Mert, Yelta, Yiğit, selim."},
+ {t:"Fast Food Court", q:"Hamburger got 4 votes on this very Turkish menu. Name one member of the burger caucus.",
+  a:"Erol, Ferahnaz, Mert or Yiğit", w:"Four sailors keeping the American dream alive."},
+ {t:"Brave Hearts", q:"Arnavut ciğeri (fried liver) found 4 takers. Name one.",
+  a:"Erol, Mert, Yelta or selim", w:"Liver: the ultimate trust exercise."},
+ {t:"The Defenders", q:"Kuru fasulye — one veto, but also 3 loyal defenders. Name one.",
+  a:"Mert, Yiğit or dd", w:"Three votes for, one veto against. The national dish barely survived."},
+ {t:"Chickpea Caucus", q:"Nohut (chickpea stew) got exactly 3 votes. Name one member.",
+  a:"Yelta, dd or uli", w:"A quiet but principled minority."},
+ {t:"Consensus Report", q:"Which category did the crew agree on MOST — 83% average approval?",
+  a:"Salads", w:"Fruits came second at 79%. Nobody fights a salad."},
+ {t:"Battleground", q:"And which category split the crew the most — only 58% approval?",
+  a:"Main dishes (öğle ana)", w:"Everyone has opinions about a kuru fasulye. Some have vetoes."},
+ {t:"Photo Finish", q:"Erol vs Yelta — who approved MORE dishes? (It's close: 93 vs 91.)",
+  a:"Erol — 93 to 91", w:"A two-dish margin. Recount demanded, denied."},
+ {t:"Meze Sisters", q:"Which pair shares 62% of their taste — both meze-first, meat-last voters?",
+  a:"dd & Lale", w:"Their combined meat index: 2 out of 18."},
+ {t:"Lonely at the Top", q:"Yiğit's CLOSEST taste match on board is only 54%. Who is it?",
+  a:"Mert", w:"When your best friend agrees with you barely half the time."},
+ {t:"Fruit Perfection", q:"Three sailors approved ALL 17 fruits. Name the trio.",
+  a:"Mert, selim & Yelta", w:"The fruit plate is safe in their watch."},
+ {t:"Muhallebi Mystery", q:"Muhallebi got 8 votes. Which TWO sailors abstained?",
+  a:"Yelta & Yiğit", w:"One avoids sugar, the other avoids… texture?"},
+ {t:"Kısır Quartet", q:"Kısır found exactly 4 fans at tea time. Name one.",
+  a:"Ferahnaz, Mert, Yelta or dd", w:"The bulgur resistance lives on."},
+ {t:"Caesar's Senate", q:"Sezar salata split the boat 5–5. Name one senator who voted YES.",
+  a:"Janset, Mert, Yelta, Yiğit or uli", w:"Et tu, croutons?"},
+ {t:"Musakka Front", q:"Musakka got 6 votes. Name one of the FOUR who passed on it.",
+  a:"Erol, Mert, Yiğit or uli", w:"Yes, even Mert has limits. This is one of only 33 dishes he skipped."},
+ {t:"Chicken Politics", q:"Tavuk ızgara — 6 yes votes. Name one of the four who said no.",
+  a:"Ferahnaz, Yiğit, dd or uli", w:"Yiğit said no to grilled chicken but yes to every red meat. Priorities."},
+ {t:"Kiwi's Friends", q:"Kivi got just 4 votes (one sailor is literally allergic). Name one kiwi supporter.",
+  a:"Ferahnaz, Mert, Yelta or selim", w:"The most divisive fruit on board."},
+ {t:"The Podium", q:"Recite the appetite podium: who are the top 3 by total yes-votes?",
+  a:"Mert (120), Ferahnaz (105), selim (98)", w:"Combined: 323 yes-votes. The kitchen has been warned."},
+ {t:"Tea-Time Sweep", q:"Only ONE sailor approved all 13 tea-time items. Who?",
+  a:"Mert", w:"Kek, börek, poğaça, cheesecake, browni… all of it. Captain Yes never sleeps."},
 ];
 
-const AWARDS = [
- {e:"🦈", n:"Mert", t:"Captain Yes",
-  w:"120 of 153 dishes approved — the biggest appetite on record. Sweet-tooth champion (21 dessert votes), perfect 7/7 adventure score, and garlic bulgur's only friend in the world. Declared a cashew allergy on a cashew-free menu, purely as a power move."},
- {e:"👑", n:"Ferahnaz", t:"The Meze Queen",
-  w:"43 of 49 mezes approved — royalty doesn't explain itself. Second-biggest appetite on board (105). One rule only: eggs never travel alone. Menemen or nothing."},
- {e:"🫶", n:"selim", t:"The Trusting Soul",
-  w:"Official quote: “I don't know what half of these are, but I'll eat everything.” 17/17 on fruit, 98 total yes-votes, zero fear. Every kitchen deserves a customer like this."},
- {e:"🎯", n:"Janset", t:"The Precision Eater",
-  w:"94 yes-votes and not a single contradiction: approved every fruit except kiwi — the one she's allergic to. Filed her sensitivities like a lawyer. Reads labels, wins games."},
- {e:"❤️", n:"Erol", t:"The Love Chef",
-  w:"His single demand for the whole week: meals must be made with love. 93 yes-votes, and mysteriously the ONLY person on board who rejected potato salad. What did it do to him? We may never know."},
- {e:"⚖️", n:"Yelta", t:"The One-Veto Wonder",
-  w:"Cast the only NEVER of the entire election — a targeted strike on kuru fasulye. All 17 fruits, almost no dessert, skipped cake and cookies. The body is a temple; the temple accepts watermelon."},
- {e:"🥩", n:"Yiğit", t:"The Carnivore",
-  w:"Meat index 9/9. Veggie index 3/13. Fruit 7/17. Ballot note, in full: “Done.” A man of protein and few words. If it once had legs or fins, he's in."},
- {e:"🫒", n:"dd", t:"The Meze Purist",
-  w:"Meat score: zero out of nine. One single grill approved: fish. Said no to mantı, köfte ızgara and çoban salata — but yes to 33 mezes. Lives directly off the Aegean. The sea provides."},
- {e:"🌷", n:"Lale", t:"The Selective Palate",
-  w:"69 carefully considered yes-votes — quality over quantity. Also the only sailor who didn't vote for strawberries, a crime we are still investigating."},
- {e:"🍅", n:"uli", t:"The Fresh-Tomato Activist",
-  w:"The toughest critic on board (67 approvals) and a single-issue campaigner: fresh tomatoes instead of paste, onions and parsley strictly separated. Change starts with one voter."},
+const CHARS = [
+ {e:"🦈", n:"Mert", t:"Captain Yes", likes:120,
+  bars:[["Meze",37,49],["Sweet tooth",21,21],["Meat",9,9],["Veggie",13,13],["Fruit",17,17],["Seafood",5,5],["Adventure",7,7]],
+  twin:["Erol","70%"], opp:["Lale","45%"],
+  facts:["120 of 153 dishes approved — the all-time boat record.",
+   "Gave a perfect 100% to SIX of the eight categories.",
+   "Garlic bulgur's only friend in the world (1/10 votes).",
+   "Declared a cashew allergy on a cashew-free menu. Just in case. 🤣"],
+  read:"The stars say yes. So does Mert."},
+ {e:"👑", n:"Ferahnaz", t:"The Meze Queen", likes:105,
+  bars:[["Meze",43,49],["Sweet tooth",15,21],["Meat",8,9],["Veggie",13,13],["Fruit",15,17],["Seafood",5,5],["Adventure",5,7]],
+  twin:["selim","71%"], opp:["uli","47%"],
+  facts:["43 of 49 mezes approved — royalty doesn't explain itself.",
+   "Second-biggest appetite on board (105).",
+   "One rule: eggs never travel alone. Menemen or nothing.",
+   "Member of the elite 3-person cheesecake club."],
+  read:"Will absolutely steal the last meze and deny it."},
+ {e:"🫶", n:"selim", t:"The Trusting Soul", likes:98,
+  bars:[["Meze",37,49],["Sweet tooth",13,21],["Meat",5,9],["Veggie",13,13],["Fruit",17,17],["Seafood",5,5],["Adventure",5,7]],
+  twin:["Ferahnaz","71%"], opp:["Yiğit","44%"],
+  facts:["Official quote: “I don't know what half of these are, but I'll eat everything.”",
+   "Perfect 17/17 on fruit, perfect 5/5 on seafood.",
+   "Half of the strongest taste-twin bond on board (71% with Ferahnaz)."],
+  read:"Trust level: submarine. Depth unknown."},
+ {e:"🎯", n:"Janset", t:"The Precision Eater", likes:94,
+  bars:[["Meze",36,49],["Sweet tooth",15,21],["Meat",6,9],["Veggie",10,13],["Fruit",16,17],["Seafood",4,5],["Adventure",3,7]],
+  twin:["Ferahnaz","64%"], opp:["Yiğit","48%"],
+  facts:["Approved every fruit except kiwi — the exact one she's allergic to. Zero contradictions.",
+   "Filed her sensitivities like a legal brief: kivi, kapya, ciğer, laktoz, susam.",
+   "Grill index 5/5 — the barbecue is safe with her."],
+  read:"Precision is a love language."},
+ {e:"❤️", n:"Erol", t:"The Love Chef", likes:93,
+  bars:[["Meze",30,49],["Sweet tooth",13,21],["Meat",7,9],["Veggie",13,13],["Fruit",13,17],["Seafood",5,5],["Adventure",5,7]],
+  twin:["Mert","70%"], opp:["Yiğit","42%"],
+  facts:["His single demand for the whole week: meals must be made with love.",
+   "The ONLY sailor who rejected potato salad. What did it do to him?",
+   "Seafood 5/5, veggie 13/13 — a balanced heart."],
+  read:"Cooks with love or doesn't eat."},
+ {e:"⚖️", n:"Yelta", t:"The One-Veto Wonder", likes:91,
+  bars:[["Meze",38,49],["Sweet tooth",6,21],["Meat",3,9],["Veggie",12,13],["Fruit",17,17],["Seafood",5,5],["Adventure",5,7]],
+  twin:["selim","66%"], opp:["Yiğit","37%"],
+  facts:["Cast the election's ONLY veto — a targeted strike on kuru fasulye.",
+   "All 17 fruits, but only 4 tea-time items and 2 desserts.",
+   "Skipped cake AND cookies. The discipline is real."],
+  read:"Fruit-powered. Legume-suspicious."},
+ {e:"🥩", n:"Yiğit", t:"The Carnivore", likes:79,
+  bars:[["Meze",24,49],["Sweet tooth",14,21],["Meat",9,9],["Veggie",3,13],["Fruit",7,17],["Seafood",5,5],["Adventure",3,7]],
+  twin:["Mert","54%"], opp:["dd","34%"],
+  facts:["Meat 9/9. Veggie 3/13. Fruit 7/17. The numbers speak.",
+   "Secret side: approved ALL SIX salads. Even predators need a garnish.",
+   "Seven of ten sailors name him their taste stranger. A true original.",
+   "Ballot note, in full: “Done.”"],
+  read:"If it grazed, it's dinner. If it grew, it's decoration."},
+ {e:"🫒", n:"dd", t:"The Meze Purist", likes:78,
+  bars:[["Meze",33,49],["Sweet tooth",12,21],["Meat",0,9],["Veggie",12,13],["Fruit",11,17],["Seafood",4,5],["Adventure",1,7]],
+  twin:["Lale","62%"], opp:["Yiğit","34%"],
+  facts:["Meat index: ZERO out of nine. A clean sheet.",
+   "One single grill approved all week: fish.",
+   "Said no to mantı, köfte ızgara and çoban salata — yes to 33 mezes."],
+  read:"Half sailor, half seagull."},
+ {e:"🌷", n:"Lale", t:"The Selective Palate", likes:69,
+  bars:[["Meze",28,49],["Sweet tooth",7,21],["Meat",2,9],["Veggie",10,13],["Fruit",10,17],["Seafood",4,5],["Adventure",1,7]],
+  twin:["dd","62%"], opp:["Yiğit","36%"],
+  facts:["69 carefully considered yes-votes — quality over quantity.",
+   "The only sailor who didn't vote for strawberries. Investigation ongoing.",
+   "Meze-first, meat-last: twin souls with dd (62%)."],
+  read:"69 yes votes, zero regrets."},
+ {e:"🍅", n:"uli", t:"The Fresh-Tomato Activist", likes:67,
+  bars:[["Meze",20,49],["Sweet tooth",14,21],["Meat",3,9],["Veggie",9,13],["Fruit",11,17],["Seafood",4,5],["Adventure",2,7]],
+  twin:["Janset","56%"], opp:["Yiğit","39%"],
+  facts:["The toughest critic on board: 67 approvals of 153.",
+   "Single-issue campaign: fresh tomatoes instead of paste, onions and parsley strictly separated.",
+   "Every uli-approved dish should feel genuinely honored."],
+  read:"Reads ingredient lists for fun."},
 ];
 
-let mode="quiz", idx=0;
+/* ================= GAME LOGIC ================= */
+const ROUND = 12;
+let mode="menu", idx=0, roundQs=[], pool=[];
 const $=s=>document.querySelector(s);
+const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
 
-function start(m){ mode=m; idx=0; $("#menu").classList.add("hidden"); $("#game").classList.remove("hidden"); render(); }
-function goMenu(){ $("#game").classList.add("hidden"); $("#menu").classList.remove("hidden"); }
-function deck(){ return mode==="quiz"?QUIZ:AWARDS; }
+function show(g){ $("#menu").classList.toggle("hidden",g); $("#game").classList.toggle("hidden",!g); window.scrollTo(0,0); }
+function goMenu(){ mode="menu"; show(false); }
 
-function render(){
-  const d=deck()[idx];
-  if(mode==="quiz"){
-    $("#stage").innerHTML=`<div class="card">
-      <div class="tag">${d.t}</div>
-      <div class="q">${d.q}</div>
-      <div class="ans" id="ans">
-        <div class="who">${d.a}</div>
-        <div class="why">${d.w}</div>
-      </div></div>`;
-    $("#revealBtn").style.display="block";
-  }else{
-    $("#stage").innerHTML=`<div class="card award">
-      <div class="emoji">${d.e}</div>
-      <div class="who">${d.n}</div>
-      <div class="title">${d.t}</div>
-      <div class="why">${d.w}</div></div>`;
-    $("#revealBtn").style.display="none";
-  }
-  $("#prog").textContent=`${idx+1} / ${deck().length}`;
+function startQuiz(){
+  if(pool.length < ROUND) pool = shuffle([...QUIZ]);
+  roundQs = pool.splice(0, ROUND);
+  mode="quiz"; idx=0; show(true); renderQuiz();
+}
+function startFiles(){ mode="files"; show(true); renderGrid(); }
+function startAwards(){ mode="awards"; idx=0; show(true); renderChar(true); }
+
+function renderQuiz(){
+  const d=roundQs[idx];
+  $("#stage").innerHTML=`<div class="card">
+    <div class="tag">${d.t}</div>
+    <div class="q">${d.q}</div>
+    <div class="ans" id="ans">
+      <div class="who">${d.a}</div>
+      <div class="why">${d.w}</div>
+    </div></div>`;
+  $("#controls").innerHTML=`
+    <button class="big" onclick="reveal()">👀 Reveal</button>
+    <div class="row">
+      <button class="ghost" onclick="qPrev()">← Back</button>
+      <button class="ghost" onclick="qNext()">Next →</button>
+    </div>
+    <button class="ghost" onclick="goMenu()">🏠 Menu</button>`;
+  $("#prog").textContent=`${idx+1} / ${roundQs.length} · pool has ${pool.length} unseen questions left`;
   window.scrollTo(0,0);
 }
 function reveal(){ const a=$("#ans"); if(a) a.classList.add("show"); }
-function nextCard(){ if(idx<deck().length-1){ idx++; render(); } else goMenu(); }
-function prevCard(){ if(idx>0){ idx--; render(); } }
+function qNext(){ if(idx<roundQs.length-1){ idx++; renderQuiz(); } else renderRoundEnd(); }
+function qPrev(){ if(idx>0){ idx--; renderQuiz(); } }
+function renderRoundEnd(){
+  $("#stage").innerHTML=`<div class="card" style="text-align:center">
+    <div class="emoji">🏁</div>
+    <div class="q">Round over!</div>
+    <div class="hint">${pool.length >= ROUND
+      ? pool.length+" unseen questions still in the pool — deal a fresh round?"
+      : "Pool almost empty — next round reshuffles everything."}</div></div>`;
+  $("#controls").innerHTML=`
+    <button class="big" onclick="startQuiz()">🔄 New round — fresh questions</button>
+    <button class="ghost" onclick="startAwards()">🏆 Awards Ceremony</button>
+    <button class="ghost" onclick="goMenu()">🏠 Menu</button>`;
+  $("#prog").textContent="";
+  window.scrollTo(0,0);
+}
+
+function renderGrid(){
+  $("#stage").innerHTML=`<div class="card">
+    <div class="tag">Crew files</div>
+    <div class="q">Pick a sailor</div>
+    <div class="grid">${CHARS.map((c,i)=>
+      `<button class="ghost" onclick="openChar(${i})"><span class="ge">${c.e}</span>${c.n}</button>`).join("")}
+    </div></div>`;
+  $("#controls").innerHTML=`<button class="ghost" onclick="goMenu()">🏠 Menu</button>`;
+  $("#prog").textContent="";
+}
+function openChar(i){ idx=i; renderChar(false); }
+
+function renderChar(ceremony){
+  const c=CHARS[idx];
+  $("#stage").innerHTML=`<div class="card">
+    <div class="emoji">${c.e}</div>
+    <div class="cn">${c.n}</div>
+    <div class="ct">${c.t}</div>
+    <span class="badge">🍽️ ${c.likes} / 153 dishes approved</span>
+    <div class="bars">${c.bars.map(([l,v,m])=>`
+      <div class="bar"><div class="bl"><span>${l}</span><span>${v}/${m}</span></div>
+      <div class="bt"><div class="bf" style="width:${Math.round(100*v/m)}%"></div></div></div>`).join("")}
+    </div>
+    <div class="duo">
+      <div><div class="dl">🤝 Taste twin</div><div class="dv">${c.twin[0]} · ${c.twin[1]}</div></div>
+      <div><div class="dl">🌪️ Taste stranger</div><div class="dv">${c.opp[0]} · ${c.opp[1]}</div></div>
+    </div>
+    <ul class="facts">${c.facts.map(f=>`<li>${f}</li>`).join("")}</ul>
+    <div class="read">“${c.read}”</div></div>`;
+  $("#controls").innerHTML = ceremony
+    ? `<div class="row">
+        <button class="ghost" onclick="aPrev()">← Back</button>
+        <button class="big" onclick="aNext()">Next award →</button>
+       </div>
+       <button class="ghost" onclick="goMenu()">🏠 Menu</button>`
+    : `<button class="big" onclick="renderGrid()">👥 Back to crew</button>
+       <button class="ghost" onclick="goMenu()">🏠 Menu</button>`;
+  $("#prog").textContent = ceremony ? `${idx+1} / ${CHARS.length}` : "";
+  window.scrollTo(0,0);
+}
+function aNext(){ if(idx<CHARS.length-1){ idx++; renderChar(true); } else goMenu(); }
+function aPrev(){ if(idx>0){ idx--; renderChar(true); } }
 </script>
 </body>
 </html>
