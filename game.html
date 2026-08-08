@@ -77,10 +77,12 @@ button{
     <div class="card">
       <div class="tag">How to play</div>
       <div class="hint">One phone, one quizmaster. Read out loud, everyone shouts a guess, tap <b>Reveal</b>.
-      Every round deals <b>12 fresh questions</b> from a pool of 46 — play again for new ones.
+      Quiz rounds deal <b>12 fresh questions</b> from a pool of 46; Ship Science briefs <b>8 shocking-but-true
+      findings</b> from a pool of 20 — every round is new until the pool runs dry.
       No points, only glory and public shame.</div>
     </div>
     <button class="big" onclick="startQuiz()">🎤 New Quiz Round (12 random questions)</button>
+    <button class="ghost" onclick="startSci()">🔬 Ship Science — shocking correlations</button>
     <button class="ghost" onclick="startFiles()">🕵️ Crew Files — character analysis</button>
     <button class="ghost" onclick="startAwards()">🏆 Awards Ceremony</button>
     <div class="foot">Every number below is a real counted vote. We just did the math.</div>
@@ -193,6 +195,70 @@ const QUIZ = [
   a:"Mert", w:"Kek, börek, poğaça, cheesecake, browni… all of it. Captain Yes never sleeps."},
 ];
 
+/* Ship Science: every claim below is backed by the actual vote overlap. We checked. Twice. */
+const SCI = [
+ {q:"Sailors who trust liver also trust tentacles.",
+  a:"All 4 arnavut ciğeri voters — Erol, Mert, Yelta, selim — also voted for octopus. 100% correlation.",
+  w:"Official diagnosis: organ-meat courage generalizes."},
+ {q:"Cheesecake is a gateway to hamburger.",
+  a:"100% of cheesecake voters (Ferahnaz, Mert, Yiğit) are also members of the burger caucus.",
+  w:"Official diagnosis: western decadence travels in packs."},
+ {q:"The burger caucus IS the meat elite.",
+  a:"Hamburger's only 4 fans — Yiğit, Mert, Ferahnaz, Erol — hold exactly the four highest meat scores on board (9, 9, 8, 7 out of 9).",
+  w:"Official diagnosis: burgers are not a lapse, they're a lifestyle."},
+ {q:"Princess dessert is warrior fuel.",
+  a:"Prenses tatlısı has exactly two voters: Mert and Yiğit — the only two sailors with perfect 9/9 meat scores.",
+  w:"Official diagnosis: every warrior needs a princess moment."},
+ {q:"Chickpeas cause pacifism.",
+  a:"The 3 nohut voters (Yelta, dd, uli) average 2 out of 9 on the meat index. dd is literally at zero.",
+  w:"Official diagnosis: the legume-to-peace pipeline is real."},
+ {q:"Russian-salad voters remain diplomatically neutral.",
+  a:"Both Rus salatası voters (Mert, Yelta) also voted for Amerikan salatası.",
+  w:"Official diagnosis: this boat recognizes no blocs."},
+ {q:"Kiwi is the final boss of fruit.",
+  a:"Of kiwi's 4 defenders, 3 (Mert, selim, Yelta) hold perfect 17/17 fruit scores. The 4th, Ferahnaz, is at 15.",
+  w:"Official diagnosis: you don't start with kiwi. You end with kiwi."},
+ {q:"Mert runs a one-man biodiversity program.",
+  a:"He is a member of every endangered-dish club on board: garlic bulgur (population 1), Russian salad (2), princess dessert (2), cheesecake (3).",
+  w:"Official diagnosis: if nobody else will love it, Mert will."},
+ {q:"Approving under 70 dishes makes you a certified genius.",
+  a:"Only two sailors qualify: uli (67) and Lale (69). The study was conducted this morning by us.",
+  w:"Official diagnosis: extremely high standards or extremely low hunger — science cannot tell."},
+ {q:"Approving 120 dishes makes you fun at parties.",
+  a:"Sample size: 1 (Mert). Statistical significance: p = who cares.",
+  w:"Official diagnosis: statistically irresponsible, socially magnificent."},
+ {q:"Yiğit is not difficult. He is rare.",
+  a:"7 of the 10 sailors register Yiğit as their least-similar palate. No one else scores above 1.",
+  w:"Official diagnosis: limited edition."},
+ {q:"Reading the instructions makes you allergic to contradictions.",
+  a:"Janset approved every single fruit except kiwi — her literal allergy. 153 votes, zero inconsistencies.",
+  w:"Official diagnosis: the only ballot a lawyer would notarize."},
+ {q:"Optimism is edible.",
+  a:"selim could not identify half the menu and approved 98 dishes anyway, including all 17 fruits.",
+  w:"Official diagnosis: clinical-grade trust."},
+ {q:"Love has exactly one exception: potato salad.",
+  a:"Erol demanded every meal be made with love — then became the ONLY sailor to reject patates salatası.",
+  w:"Official diagnosis: even love has a past."},
+ {q:"dd is scientifically 40% seagull.",
+  a:"Meat index 0/9. Exactly one grill approved all week: fish. Plus 33 mezes.",
+  w:"Official diagnosis: do not leave sandwiches unattended."},
+ {q:"Salad achieves what diplomacy cannot.",
+  a:"Salads got 83% crew-wide approval — the highest consensus of any category. Main dishes: 58%.",
+  w:"Official diagnosis: world peace is a çoban salata."},
+ {q:"Strawberry denial is a one-woman movement.",
+  a:"9 of 10 sailors voted for çilek. The lone holdout: Lale.",
+  w:"Official diagnosis: the strawberry lobby has questions."},
+ {q:"Spice loyalty runs deep.",
+  a:"75% of atom voters (Janset, Mert, Yelta) also voted for acılı ezme.",
+  w:"Official diagnosis: capsaicin is a personality."},
+ {q:"Muhammara and mütebbel are rival political parties.",
+  a:"Each has 5 voters, but only Lale, Yiğit and dd hold dual citizenship. Everyone else picked a side.",
+  w:"Official diagnosis: coalition talks ongoing."},
+ {q:"The smoothie agenda is real.",
+  a:"Yelta: 17/17 fruits, 2/8 desserts, zero cake, zero cookies, and the election's only veto — on beans.",
+  w:"Official diagnosis: a blender in human form."},
+];
+
 const CHARS = [
  {e:"🦈", n:"Mert", t:"Captain Yes", likes:120,
   bars:[["Meze",37,49],["Sweet tooth",21,21],["Meat",9,9],["Veggie",13,13],["Fruit",17,17],["Seafood",5,5],["Adventure",7,7]],
@@ -270,8 +336,8 @@ const CHARS = [
 ];
 
 /* ================= GAME LOGIC ================= */
-const ROUND = 12;
-let mode="menu", idx=0, roundQs=[], pool=[];
+const ROUND = 12, ROUND_SCI = 8;
+let mode="menu", idx=0, roundQs=[], pool=[], sciPool=[];
 const $=s=>document.querySelector(s);
 const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
 
@@ -283,41 +349,49 @@ function startQuiz(){
   roundQs = pool.splice(0, ROUND);
   mode="quiz"; idx=0; show(true); renderQuiz();
 }
+function startSci(){
+  if(sciPool.length < ROUND_SCI) sciPool = shuffle([...SCI]);
+  roundQs = sciPool.splice(0, ROUND_SCI);
+  mode="sci"; idx=0; show(true); renderQuiz();
+}
 function startFiles(){ mode="files"; show(true); renderGrid(); }
 function startAwards(){ mode="awards"; idx=0; show(true); renderChar(true); }
 
+function activePool(){ return mode==="sci" ? sciPool : pool; }
+
 function renderQuiz(){
-  const d=roundQs[idx];
+  const d=roundQs[idx], sci = mode==="sci";
   $("#stage").innerHTML=`<div class="card">
-    <div class="tag">${d.t}</div>
+    <div class="tag">${sci ? "Finding #"+(idx+1)+" · peer-reviewed by seagulls" : d.t}</div>
     <div class="q">${d.q}</div>
     <div class="ans" id="ans">
-      <div class="who">${d.a}</div>
+      <div class="who" ${sci?'style="font-size:17px;line-height:1.5"':''}>${sci?"📊 The data: ":""}${d.a}</div>
       <div class="why">${d.w}</div>
     </div></div>`;
   $("#controls").innerHTML=`
-    <button class="big" onclick="reveal()">👀 Reveal</button>
+    <button class="big" onclick="reveal()">${sci ? "🔬 Prove it" : "👀 Reveal"}</button>
     <div class="row">
       <button class="ghost" onclick="qPrev()">← Back</button>
       <button class="ghost" onclick="qNext()">Next →</button>
     </div>
     <button class="ghost" onclick="goMenu()">🏠 Menu</button>`;
-  $("#prog").textContent=`${idx+1} / ${roundQs.length} · pool has ${pool.length} unseen questions left`;
+  $("#prog").textContent=`${idx+1} / ${roundQs.length} · ${activePool().length} unseen ${sci?"findings":"questions"} left in the pool`;
   window.scrollTo(0,0);
 }
 function reveal(){ const a=$("#ans"); if(a) a.classList.add("show"); }
 function qNext(){ if(idx<roundQs.length-1){ idx++; renderQuiz(); } else renderRoundEnd(); }
 function qPrev(){ if(idx>0){ idx--; renderQuiz(); } }
 function renderRoundEnd(){
+  const sci = mode==="sci", left = activePool().length, min = sci?ROUND_SCI:ROUND;
   $("#stage").innerHTML=`<div class="card" style="text-align:center">
     <div class="emoji">🏁</div>
-    <div class="q">Round over!</div>
-    <div class="hint">${pool.length >= ROUND
-      ? pool.length+" unseen questions still in the pool — deal a fresh round?"
+    <div class="q">${sci ? "End of the research briefing!" : "Round over!"}</div>
+    <div class="hint">${left >= min
+      ? left+" unseen "+(sci?"findings":"questions")+" still in the pool — deal a fresh round?"
       : "Pool almost empty — next round reshuffles everything."}</div></div>`;
   $("#controls").innerHTML=`
-    <button class="big" onclick="startQuiz()">🔄 New round — fresh questions</button>
-    <button class="ghost" onclick="startAwards()">🏆 Awards Ceremony</button>
+    <button class="big" onclick="${sci?"startSci()":"startQuiz()"}">🔄 New round — fresh ${sci?"findings":"questions"}</button>
+    <button class="ghost" onclick="${sci?"startQuiz()":"startSci()"}">${sci?"🎤 Switch to Quiz":"🔬 Switch to Ship Science"}</button>
     <button class="ghost" onclick="goMenu()">🏠 Menu</button>`;
   $("#prog").textContent="";
   window.scrollTo(0,0);
